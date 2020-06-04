@@ -1,0 +1,7 @@
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+img = cv2.imread(r"   ")    #读取文件(read file)
+cv2.imshow("result",img)    #显示图片(show pic)
+cv2.watiKey(0)
