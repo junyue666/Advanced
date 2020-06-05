@@ -1,0 +1,75 @@
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_boston
+
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+#解决中文显示问题
+plt.rcParams['font.family']=['SimHei']
+plt.rcParams['axes.unicode_minus']=False
+#导入波士顿房价
+housing = load_boston()
+X = housing.data
+y = housing.target
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=0)
+
+#导入随机森林两个关键的包
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
+#参数设置
+param_grid = {
+        'n_estimators':[5,10,20,50,100,200],# 决策树的个数
+        'max_depth':[3,5,7],#最大树深，树太深会造成过拟合
+        'max_features':[0.6,0.7,0.8,1] #决策树分时考虑的最大特征数
+        }
+#实例化一个分类器
+rf = RandomForestRegressor()
+#网格交叉搜索进行训练
+grid = GridSearchCV(rf,param_grid=param_grid,cv=3)
+grid.fit(X_train,y_train)
+
+grid.best_params_
+rf_reg = grid.best_estimator_
+
+
+#将其中的一棵决策树进行可视化
+from sklearn import tree
+import pydotplus
+from IPython.display import Image,display
+#添加graphviz的路径，否则显示不出俩，而且必须是这个位置，其他位置不行（不知道为什么）
+import os
+os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\Graphviz2.38\bin'
+#打印出第一棵决策树
+estimator = rf_reg.estimators_[0]  #也可以打印其他决策树
+dot_data = tree.export_graphviz(estimator,
+                                out_file=None,
+                                filled=True,
+                                rounded=True,
+                                special_characters=True)
+graph = pydotplus.graph_from_dot_data(dot_data)
+
+display(Image(graph.create_png()))
+graph.write_pdf('dot_data')
+
+feature_importance = rf_reg.feature_importances_
+indices = np.argsort(feature_importance)[::-1]
+for i in indices:
+    print('特征排序：%s %f' %(housing.feature_names[i],feature_importance[i]))
+
+plt.bar(np.arange(len(indices)),feature_importance[indices])
+plt.xticks(range(len(indices)),np.array(housing.feature_names)[indices])
+plt.show()
+
+result = {'label':y_test,'prediction':rf_ref_pred(x_test)}
+result = pd.DataFrame(result)
+
+result.head()
+
+result['label'].plot(style='k.',figsize=(15,5))
+result['prediction'].plot(style='r.')
+plt.lengend(fontsize=15,markerscale=3)
+
+plt.tick_params(labelsize=25)
+plt.grid()
