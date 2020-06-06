@@ -53,6 +53,7 @@ from keras.layers import Conv2D,MaxPool2D
 model = Sequential()
 
 #第一层卷积，32个3*3的卷积核，激活函数是ReLu
+input_shape = （9，7，3）   #保证了后面的程序可以正常运行，但是具体什么含义还不太清楚
 model.add(Conv2D(filter=32,kerne_size=(3,3),activation='relu',input_shape=input_shape))#这里的input_shape不太清楚代表什么
 #第二层卷积，64个3*3的卷积核，激活函数是ReLu
 model.add(Conv2D(filters=64,kernel_size=(3,3),activation="relu"))
