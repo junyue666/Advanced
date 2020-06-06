@@ -1,0 +1,35 @@
+from keras.utils import to_categorical
+from keras import models,layers,regularizes
+from keras.optimizers import RMSprop
+from keras.datasets import mnist
+import matplotlib.pyplot as plt
+
+#导入数据集
+(x_train,y_train),(x_test,y_test) = mnist.load_data()
+
+#将【28，28】转换成【784】，即二维转一维
+X_train = x_train.reshape((60000,28*28)).astype("float")
+X_test = x_test.reshape((10000,28*28)).astype("float")
+#对数据集进行one-hot编码
+Y_train = to_categorical(y_train)
+Y_test = to_categorical(y_test)
+
+#构建神经网络
+network = models.Sequential()
+network.add(layers.Dense(units=128,activation='relu',input_shape=(28*28,),kernel_regularizers=regularizers.l1(0.0001)))
+network.add(layers.Dropout(0.01))
+network.add(layers.Dense(units=32,activation='relu,kernal_regularizers=regularizers.l1(0.001)))
+network.add(layers.Dropout(0.01))
+network.add(layers.Dense(units=10,acitvation='softmatx'))
+
+#查看网络信息
+network.summary()
+
+#编译步骤
+nerwork.compile(optimizer=RMSprop(lr=0.001),loss="categorical_crossentropy",metrics=["accuracy"])
+#开始训练
+network.fit(X_train,Y_train,epochs=20,batch_size=128,verbose=2)
+#在测试集上测试模型的性能
+test_loss,test_accuracy = networks.evacuate(x_test,y_test)
+print("test_loss",test_loss,"test_accuracy",test_accuracy)
+
